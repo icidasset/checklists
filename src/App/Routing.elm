@@ -30,6 +30,6 @@ locationToPage location =
 route : Parser (Page -> a) a
 route =
     oneOf
-        [ map Checklist (s "checklists" </> string)
+        [ map Checklist (s "checklist" <?> stringParam "id")
         , map Index top
         ]

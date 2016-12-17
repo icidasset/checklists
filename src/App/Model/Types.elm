@@ -32,5 +32,5 @@ type Msg
 
 type Page
     = Index
-    | Checklist String
+    | Checklist (Maybe String)
     | NotFound

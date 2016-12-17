@@ -17,7 +17,7 @@ withMessage msg model =
         Deflated result ->
             (!)
                 model
-                [ newUrl ("/checklists/" ++ result) ]
+                [ newUrl ("/checklist?id=" ++ result) ]
 
         Inflated (Just result) ->
             -- TODO: Handle decoding error
@@ -55,9 +55,9 @@ withMessage msg model =
         ---------------------------------------
         -- Navigation
         ---------------------------------------
-        SetPage (Checklist hash) ->
+        SetPage (Checklist (Just hash)) ->
             (!)
-                { model | currentPage = Checklist hash, decodedChecklist = Nothing }
+                { model | currentPage = Checklist (Just hash), decodedChecklist = Nothing }
                 [ Checklist.inflate hash ]
 
         SetPage page ->
