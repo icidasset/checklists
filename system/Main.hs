@@ -44,6 +44,7 @@ sequences :: IO [(String, Dictionary)]
 sequences = lsequence
   [ ( "pages",  process ["src/Pages/**/*.hs"]                                   )
   , ( "js",     process ["src/*.js"]                          >>= Shikensu.read )
+  , ( "vendor", process ["src/Vendor/**/*.js"]                >>= Shikensu.read )
   , ( "images", process ["icidasset-template/images/**/*.*"]  >>= Shikensu.read )
   ]
 
@@ -64,6 +65,7 @@ flow deps ("pages", dict) =
 
 
 flow _ ("js", dict) = dict
+flow _ ("vendor", dict) = prefixDirname "vendor/" dict
 flow _ ("images", dict) = prefixDirname "images/" dict
 
 

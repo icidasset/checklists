@@ -1,0 +1,17 @@
+.form-item {
+  display: inline-block;
+  position: relative;
+
+  & .form-item__remove {
+    border-bottom: 0;
+    color: $base04;
+    font-size: .95em;
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 9;
+  }
+
+
+}

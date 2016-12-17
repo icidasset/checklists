@@ -1,9 +1,13 @@
 module Model.Types exposing (..)
 
+import Checklist exposing (Checklist)
+import Form exposing (Form)
+
 
 type alias Model =
-    { currentPage : Page
-    , isLoading : Bool
+    { createForm : Form String Checklist
+    , currentPage : Page
+    , decodedChecklist : Maybe Checklist
     , pathToRoot : String
     }
 
@@ -13,8 +17,12 @@ type alias Model =
 
 
 type Msg
-    = -- Navigation
-      GoToIndex
+    = -- Checklists
+      Deflated String
+    | Inflated (Maybe String)
+      -- Forms
+    | HandleCreateForm Form.Msg
+      -- Navigation
     | SetPage Page
 
 

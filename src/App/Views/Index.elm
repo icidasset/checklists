@@ -1,8 +1,14 @@
 module Views.Index exposing (view)
 
+import Checklist exposing (Checklist)
+import Form exposing (Form)
+import Form.Input as Input
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Events exposing (onSubmit)
+import Html.Events.Extra exposing (onClickPreventDefault)
 import Model.Types exposing (Model, Msg(..))
+import Views.Utils
 
 
 view : Model -> Html Msg
@@ -19,7 +25,7 @@ view model =
             [ class "blocks__row" ]
             [ div
                 [ class "block" ]
-                [ theForm model ]
+                [ Html.map HandleCreateForm (theForm model) ]
             ]
         ]
 
@@ -39,35 +45,35 @@ theIntro _ =
 -- Form
 
 
-theForm : Model -> Html Msg
-theForm _ =
+theForm : Model -> Html Form.Msg
+theForm model =
     Html.form
-        []
+        [ onSubmit Form.Submit ]
         [ p
             []
             [ label
-                []
+                [ for "name" ]
                 [ text "Checklist name" ]
-            , input
-                [ type_ "text", placeholder "My checklist" ]
-                []
+            , Input.textInput
+                (Form.getFieldAsString "name" model.createForm)
+                [ placeholder "My checklist" ]
             ]
         , p
             []
             [ label
                 []
                 [ text "Items" ]
-            , input
-                [ type_ "text", placeholder "1st item on my checklist" ]
-                []
-            , input
-                [ type_ "text", placeholder "2nd item on my checklist" ]
-                []
+            , span
+                [ style [ ( "display", "block" ) ] ]
+                (List.map
+                    (itemView model.createForm)
+                    (Form.getListIndexes "items" model.createForm)
+                )
             ]
         , p
             []
             [ a
-                []
+                [ onClickPreventDefault (Form.Append "items") ]
                 [ text "+ Add item" ]
             ]
         , p
@@ -76,6 +82,7 @@ theForm _ =
                 [ type_ "submit" ]
                 [ text "Create checklist" ]
             ]
+        , Views.Utils.formErrors model.createForm
         , p
             []
             [ small
@@ -89,3 +96,30 @@ theForm _ =
                 ]
             ]
         ]
+
+
+itemView : Form String Checklist -> Int -> Html Form.Msg
+itemView leForm idx =
+    let
+        i =
+            toString (idx)
+
+        n =
+            toString (idx + 1)
+    in
+        span
+            []
+            [ span
+                [ class "form-item" ]
+                [ Input.textInput
+                    (Form.getFieldAsString ("items." ++ i) leForm)
+                    [ placeholder ("Item " ++ n) ]
+                , a
+                    [ class "form-item__remove"
+                    , onClickPreventDefault (Form.RemoveItem "items" idx)
+                    , title "Remove item"
+                    ]
+                    [ text "✘" ]
+                ]
+            , br [] []
+            ]

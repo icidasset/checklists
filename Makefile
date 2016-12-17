@@ -38,7 +38,7 @@ css:
 elm:
 	@echo "> Compiling Elm code"
 
-	$(eval ELM_MAKE_ARGS = src/App/Main.elm --output $(BUILD_DIR)/application.js --yes)
+	$(eval ELM_MAKE_ARGS = src/App/Main.elm --debug --output $(BUILD_DIR)/application.js --yes)
 
 	@if [ -d ./libsysconfcpus/bin ]; then \
 		./libsysconfcpus/bin/sysconfcpus -n 1 elm-make $(ELM_MAKE_ARGS); \

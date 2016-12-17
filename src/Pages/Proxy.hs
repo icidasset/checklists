@@ -18,6 +18,10 @@ template obj _ = mconcat
       ( Aeson.encode obj )
 
   , script_
+      [ src_ $ Text.append (obj ⚡⚡ "pathToRoot") ("vendor/pako.min.js") ]
+      ( "" )
+
+  , script_
       [ src_ $ Text.append (obj ⚡⚡ "pathToRoot") ("application.js") ]
       ( "" )
 
