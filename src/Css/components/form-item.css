@@ -1,11 +1,16 @@
 .form-item {
-  display: inline-block;
+  display: block;
   position: relative;
 
   & .form-item__remove {
+    @mixin font-smoothing;
+    background: white;
     border-bottom: 0;
+    box-shadow: 0 0 10px 5px white;
     color: $base04;
     font-size: .95em;
+    line-height: 1.6;
+    padding-left: 4px;
     position: absolute;
     right: 0;
     top: 50%;

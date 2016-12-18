@@ -1,0 +1,19 @@
+.checklist {
+  margin: 0 auto;
+  max-width: rem(490px);
+
+  & .checklist__item {
+    margin-bottom: 1gr;
+  }
+
+  & input[type="checkbox"] {
+    margin-right: 1gr;
+    transform: translateY(-1px);
+  }
+
+  & label {
+    cursor: pointer;
+  }
+
+
+}

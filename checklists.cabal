@@ -29,6 +29,7 @@ executable build
     base,
     flow == 1.*,
     icidasset-template == 1.*,
+    lucid,
     shikensu == 0.1.*,
     text == 1.*,
     unordered-containers == 0.2.*

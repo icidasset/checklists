@@ -8,7 +8,9 @@ type alias Model =
     { createForm : Form String Checklist
     , currentPage : Page
     , decodedChecklist : Maybe Checklist
+    , deflationResult : Maybe String
     , pathToRoot : String
+    , redirectToChecklist : Bool
     }
 
 
@@ -18,11 +20,13 @@ type alias Model =
 
 type Msg
     = -- Checklists
-      Deflated String
+      Deflated (Maybe String)
     | Inflated (Maybe String)
+    | ForkCurrent
       -- Forms
     | HandleCreateForm Form.Msg
       -- Navigation
+    | GoToIndex
     | SetPage Page
 
 

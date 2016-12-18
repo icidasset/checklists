@@ -8,9 +8,9 @@ import Model.Types exposing (Model, Msg)
 import String.Extra exposing (humanize)
 
 
-formErrors : Form String o -> Html Form.Msg
-formErrors form =
-    if Form.isSubmitted form then
+formErrors : Form String o -> Bool -> Html Form.Msg
+formErrors form bypass =
+    if Form.isSubmitted form || bypass then
         p
             [ class "form__error" ]
             [ case List.head (Form.getErrors form) of

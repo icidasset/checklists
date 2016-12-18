@@ -21,7 +21,9 @@ withProgramFlags flags location =
             { createForm = Form.initial initialCreateFormFields Forms.Validation.createForm
             , currentPage = Routing.locationToPage location
             , decodedChecklist = Nothing
+            , deflationResult = Nothing
             , pathToRoot = flags.pathToRoot
+            , redirectToChecklist = False
             }
     in
         Model.Update.withMessage
