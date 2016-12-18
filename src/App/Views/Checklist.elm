@@ -5,6 +5,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events.Extra exposing (onClickPreventDefault)
 import Model.Types exposing (Model, Msg(..))
+import Views.Icon
 import Views.LoadingScreen
 
 
@@ -12,7 +13,7 @@ view : Model -> Html Msg
 view model =
     case model.decodedChecklist of
         Just checklist ->
-            theChecklist checklist
+            theChecklist model checklist
 
         Nothing ->
             Views.LoadingScreen.view
@@ -22,8 +23,8 @@ view model =
 -- Private
 
 
-theChecklist : Checklist -> Html Msg
-theChecklist checklist =
+theChecklist : Model -> Checklist -> Html Msg
+theChecklist model checklist =
     div
         [ class "blocks" ]
         [ div
@@ -48,7 +49,11 @@ theChecklist checklist =
                                         []
                                     , label
                                         [ for theId ]
-                                        [ text item ]
+                                        [ span
+                                            [ class "checkbox" ]
+                                            [ Views.Icon.view model "i-check" ]
+                                        , text item
+                                        ]
                                     ]
                         )
                         (checklist.items)
