@@ -22,9 +22,11 @@ itemsValidater =
         |> andThen nonEmptyList
 
 
-nonEmptyList : List String -> Validation e (List String)
+nonEmptyList : List String -> Validation String (List String)
 nonEmptyList list field =
-    if List.isEmpty list || List.any ((==) "") list then
+    if List.isEmpty list then
+        Err (Form.Error.value <| CustomError "There must be at least one item")
+    else if List.any ((==) "") list then
         Err (Form.Error.value Empty)
     else
         Ok list
