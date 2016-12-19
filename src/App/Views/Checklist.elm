@@ -7,16 +7,20 @@ import Html.Events.Extra exposing (onClickPreventDefault)
 import Model.Types exposing (Model, Msg(..))
 import Views.Icon
 import Views.LoadingScreen
+import Views.MessageScreen
 
 
 view : Model -> Html Msg
 view model =
-    case model.decodedChecklist of
-        Just checklist ->
-            theChecklist model checklist
+    if model.isInflating then
+        Views.LoadingScreen.view
+    else
+        case model.decodedChecklist of
+            Just checklist ->
+                theChecklist model checklist
 
-        Nothing ->
-            Views.LoadingScreen.view
+            Nothing ->
+                Views.MessageScreen.view "Could not decode checklist."
 
 
 

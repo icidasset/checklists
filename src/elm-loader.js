@@ -42,7 +42,7 @@ function tryAndCatch(fn, string) {
   try {
     return fn(string);
   } catch (err) {
-    console.log(err);
+    console.error(err);
     return null;
   }
 }

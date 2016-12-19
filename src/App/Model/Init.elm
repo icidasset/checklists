@@ -22,6 +22,7 @@ withProgramFlags flags location =
             , currentPage = Routing.locationToPage location
             , decodedChecklist = Nothing
             , deflationResult = Nothing
+            , isInflating = False
             , pathToRoot = flags.pathToRoot
             , redirectToChecklist = False
             }

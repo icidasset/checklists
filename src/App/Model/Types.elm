@@ -9,6 +9,7 @@ type alias Model =
     , currentPage : Page
     , decodedChecklist : Maybe Checklist
     , deflationResult : Maybe String
+    , isInflating : Bool
     , pathToRoot : String
     , redirectToChecklist : Bool
     }
@@ -37,4 +38,4 @@ type Msg
 type Page
     = Index
     | Checklist (Maybe String)
-    | NotFound
+    | ErrorScreen String

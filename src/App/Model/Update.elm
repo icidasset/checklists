@@ -32,24 +32,26 @@ withMessage msg model =
                 ]
 
         Deflated Nothing ->
-            -- TODO: Show error
-            (!)
-                { model | deflationResult = Nothing }
-                []
+            if model.redirectToChecklist then
+                (!)
+                    { model | deflationResult = Nothing }
+                    [ newUrl "/error/deflation" ]
+            else
+                (!)
+                    model
+                    []
 
         --
         -- Inflate
         --
         Inflated (Just result) ->
-            -- TODO: Handle decoding error
             (!)
-                { model | decodedChecklist = Checklist.decode result }
+                { model | decodedChecklist = Checklist.decode result, isInflating = False }
                 []
 
         Inflated Nothing ->
-            -- TODO: Show error
             (!)
-                { model | decodedChecklist = Nothing }
+                { model | decodedChecklist = Nothing, isInflating = False }
                 []
 
         --
@@ -103,7 +105,7 @@ withMessage msg model =
 
         SetPage (Checklist (Just hash)) ->
             (!)
-                { model | currentPage = Checklist (Just hash) }
+                { model | currentPage = Checklist (Just hash), isInflating = True }
                 [ Checklist.inflate hash ]
 
         SetPage page ->

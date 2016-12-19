@@ -16,5 +16,5 @@ view model =
         Index ->
             Views.Index.view model
 
-        _ ->
-            Views.MessageScreen.view "Page not found."
+        ErrorScreen err ->
+            Views.MessageScreen.view err

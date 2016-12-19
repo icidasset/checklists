@@ -20,7 +20,7 @@ locationToPage : Navigation.Location -> Page
 locationToPage location =
     location
         |> UrlParser.parsePath route
-        |> Maybe.withDefault NotFound
+        |> Maybe.withDefault (ErrorScreen "Page not found.")
 
 
 
@@ -32,4 +32,6 @@ route =
     oneOf
         [ map Checklist (s "checklist" <?> stringParam "id")
         , map Index top
+          -- Errors
+        , map (ErrorScreen "Could not encode checklist.") (s "error" </> s "deflation")
         ]
