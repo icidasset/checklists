@@ -1,5 +1,4 @@
 var node = document.querySelector(".elm-container");
-var authTokenKey = "authToken";
 
 //
 // Config
