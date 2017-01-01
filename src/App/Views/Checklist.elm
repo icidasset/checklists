@@ -71,7 +71,7 @@ theChecklist model checklist =
                     [ onClickPreventDefault ForkCurrent ]
                     [ text "Fork checklist" ]
                 , a
-                    [ href "../", onClickPreventDefault GoToIndex ]
+                    [ href "../", onClickPreventDefault NewChecklist ]
                     [ text "Create new checklist" ]
                 ]
             ]

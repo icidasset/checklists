@@ -1,8 +1,7 @@
 module Model.Init exposing (withProgramFlags)
 
 import Form
-import Form.Field
-import Form.Init exposing (setList)
+import Forms.Init
 import Forms.Validation
 import Model.Types exposing (Model, Msg(..))
 import Model.Update
@@ -17,8 +16,13 @@ type alias ProgramFlags =
 withProgramFlags : ProgramFlags -> Navigation.Location -> ( Model, Cmd Msg )
 withProgramFlags flags location =
     let
+        initialCreateForm =
+            Form.initial
+                Forms.Init.initialCreateFormFields
+                Forms.Validation.createForm
+
         model =
-            { createForm = Form.initial initialCreateFormFields Forms.Validation.createForm
+            { createForm = initialCreateForm
             , currentPage = Routing.locationToPage location
             , decodedChecklist = Nothing
             , deflationResult = Nothing
@@ -30,16 +34,3 @@ withProgramFlags flags location =
         Model.Update.withMessage
             (SetPage model.currentPage)
             (model)
-
-
-
--- Private
-
-
-initialCreateFormFields : List ( String, Form.Field.Field )
-initialCreateFormFields =
-    [ setList "items"
-        [ Form.Field.string ""
-        , Form.Field.string ""
-        ]
-    ]

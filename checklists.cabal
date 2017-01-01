@@ -21,7 +21,6 @@ executable build
     Main.hs
 
   other-modules:
-    Catalogs
     Pages.Proxy
 
   build-depends:

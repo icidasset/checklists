@@ -28,6 +28,7 @@ type Msg
     | HandleCreateForm Form.Msg
       -- Navigation
     | GoToIndex
+    | NewChecklist
     | SetPage Page
 
 

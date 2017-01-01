@@ -6,6 +6,7 @@ import Debug
 import Form exposing (Form)
 import Form.Field
 import Form.Init
+import Forms.Init
 import Forms.Utils exposing (..)
 import Model.Types exposing (..)
 import Navigation exposing (modifyUrl, newUrl)
@@ -102,6 +103,17 @@ withMessage msg model =
         ---------------------------------------
         GoToIndex ->
             (!) model [ newUrl "/" ]
+
+        NewChecklist ->
+            let
+                updatedForm =
+                    Form.update
+                        (Form.Reset Forms.Init.initialCreateFormFields)
+                        (model.createForm)
+            in
+                (!)
+                    { model | createForm = updatedForm }
+                    [ newUrl "/" ]
 
         SetPage (Checklist (Just hash)) ->
             (!)
