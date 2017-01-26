@@ -10,6 +10,7 @@ import Forms.Init
 import Forms.Utils exposing (..)
 import Model.Types exposing (..)
 import Navigation exposing (modifyUrl, newUrl)
+import Signals.Ports as Ports
 
 
 withMessage : Msg -> Model -> ( Model, Cmd Msg )
@@ -46,9 +47,19 @@ withMessage msg model =
         -- Inflate
         --
         Inflated (Just result) ->
-            (!)
-                { model | decodedChecklist = Checklist.decode result, isInflating = False }
-                []
+            let
+                checklist =
+                    Checklist.decode result
+            in
+                (!)
+                    { model | decodedChecklist = checklist, isInflating = False }
+                    [ case checklist of
+                        Just c ->
+                            Ports.setDocumentTitle (c.name ++ " / Checklists – I.A.")
+
+                        Nothing ->
+                            Cmd.none
+                    ]
 
         Inflated Nothing ->
             (!)

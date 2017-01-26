@@ -9,6 +9,9 @@ port deflate : String -> Cmd msg
 port inflate : String -> Cmd msg
 
 
+port setDocumentTitle : String -> Cmd msg
+
+
 
 -- Listen
 

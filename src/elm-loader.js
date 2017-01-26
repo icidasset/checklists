@@ -23,6 +23,10 @@ app.ports.inflate.subscribe(function(string) {
   app.ports.inflateResult.send(tryAndCatch(inflate, string));
 });
 
+app.ports.setDocumentTitle.subscribe(function(string) {
+  document.title = string;
+});
+
 //
 // Functions
 function deflate(string) {
