@@ -24,6 +24,7 @@ type Msg
       Deflated (Maybe String)
     | Inflated (Maybe String)
     | ForkCurrent
+    | ToggleItem String Bool
       -- Forms
     | HandleCreateForm Form.Msg
       -- Navigation

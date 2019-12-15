@@ -23,12 +23,12 @@ withMessage msg model =
             (!)
                 { model | deflationResult = Just result }
                 [ if
-                    (model.redirectToChecklist
+                    model.redirectToChecklist
                         && String.length result
                         <= Constants.maxDeflationHashLength
-                    )
                   then
                     newUrl ("/checklist?id=" ++ result)
+
                   else
                     Cmd.none
                 ]
@@ -38,6 +38,7 @@ withMessage msg model =
                 (!)
                     { model | deflationResult = Nothing }
                     [ newUrl "/error/deflation" ]
+
             else
                 (!)
                     model
@@ -51,15 +52,15 @@ withMessage msg model =
                 checklist =
                     Checklist.decode result
             in
-                (!)
-                    { model | decodedChecklist = checklist, isInflating = False }
-                    [ case checklist of
-                        Just c ->
-                            Ports.setDocumentTitle (c.name ++ " / Checklists – I.A.")
+            (!)
+                { model | decodedChecklist = checklist, isInflating = False }
+                [ case checklist of
+                    Just c ->
+                        Ports.setDocumentTitle (c.name ++ " / Checklists – I.A.")
 
-                        Nothing ->
-                            Cmd.none
-                    ]
+                    Nothing ->
+                        Cmd.none
+                ]
 
         Inflated Nothing ->
             (!)
@@ -83,11 +84,42 @@ withMessage msg model =
                 newModel =
                     { model | createForm = updatedForm, redirectToChecklist = False }
             in
-                (!)
-                    newModel
-                    [ newUrl "/"
-                    , encodingChecklistCmd newModel.createForm
-                    ]
+            (!)
+                newModel
+                [ newUrl "/"
+                , encodingChecklistCmd newModel.createForm
+                ]
+
+        --
+        -- Toggle
+        --
+        ToggleItem item bool ->
+            case model.decodedChecklist of
+                Just checklist ->
+                    let
+                        newChecklist =
+                            { checklist
+                                | items =
+                                    List.map
+                                        (\( i, b ) ->
+                                            if i == item then
+                                                ( i, bool )
+
+                                            else
+                                                ( i, b )
+                                        )
+                                        checklist.items
+                            }
+                    in
+                    (!)
+                        { model
+                            | decodedChecklist = Just newChecklist
+                            , redirectToChecklist = True
+                        }
+                        [ Checklist.encode newChecklist ]
+
+                Nothing ->
+                    (!) model []
 
         ---------------------------------------
         -- Forms
@@ -100,14 +132,15 @@ withMessage msg model =
                 newModel =
                     { model | createForm = updatedForm }
             in
-                if shouldSubmitForm formMsg updatedForm then
-                    (!)
-                        { newModel | redirectToChecklist = True }
-                        [ encodingChecklistCmd updatedForm ]
-                else
-                    (!)
-                        { newModel | redirectToChecklist = False }
-                        [ encodingChecklistCmd updatedForm ]
+            if shouldSubmitForm formMsg updatedForm then
+                (!)
+                    { newModel | redirectToChecklist = True }
+                    [ encodingChecklistCmd updatedForm ]
+
+            else
+                (!)
+                    { newModel | redirectToChecklist = False }
+                    [ encodingChecklistCmd updatedForm ]
 
         ---------------------------------------
         -- Navigation
@@ -120,11 +153,11 @@ withMessage msg model =
                 updatedForm =
                     Form.update
                         (Form.Reset Forms.Init.initialCreateFormFields)
-                        (model.createForm)
+                        model.createForm
             in
-                (!)
-                    { model | createForm = updatedForm }
-                    [ newUrl "/" ]
+            (!)
+                { model | createForm = updatedForm }
+                [ newUrl "/" ]
 
         SetPage (Checklist (Just hash)) ->
             (!)
@@ -159,8 +192,8 @@ formFieldsForChecklist : Checklist.Checklist -> List ( String, Form.Field.Field 
 formFieldsForChecklist checklist =
     let
         items =
-            List.map Form.Field.string checklist.items
+            List.map (Tuple.first >> Form.Field.string) checklist.items
     in
-        [ Form.Init.setString "name" checklist.name
-        , Form.Init.setList "items" items
-        ]
+    [ Form.Init.setString "name" checklist.name
+    , Form.Init.setList "items" items
+    ]

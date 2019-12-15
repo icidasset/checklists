@@ -5,12 +5,13 @@ import Json.Encode
 import Signals.Ports as Ports
 
 
+
 -- Types
 
 
 type alias Checklist =
     { name : String
-    , items : List String
+    , items : List ( String, Bool )
     }
 
 
@@ -41,7 +42,15 @@ toJsonValue : Checklist -> Json.Encode.Value
 toJsonValue checklist =
     Json.Encode.object
         [ ( "name", Json.Encode.string checklist.name )
-        , ( "items", Json.Encode.list (List.map Json.Encode.string checklist.items) )
+        , ( "items", Json.Encode.list (List.map encodeItem checklist.items) )
+        ]
+
+
+encodeItem : ( String, Bool ) -> Json.Encode.Value
+encodeItem ( value, isChecked ) =
+    Json.Encode.list
+        [ Json.Encode.string value
+        , Json.Encode.bool isChecked
         ]
 
 
@@ -60,4 +69,17 @@ decoder : Json.Decode.Decoder Checklist
 decoder =
     Json.Decode.map2 Checklist
         (Json.Decode.field "name" <| Json.Decode.string)
-        (Json.Decode.field "items" <| Json.Decode.list Json.Decode.string)
+        (Json.Decode.field "items" <| Json.Decode.list itemDecoder)
+
+
+itemDecoder : Json.Decode.Decoder ( String, Bool )
+itemDecoder =
+    Json.Decode.oneOf
+        [ Json.Decode.map2
+            (,)
+            (Json.Decode.index 0 Json.Decode.string)
+            (Json.Decode.index 1 Json.Decode.bool)
+        , Json.Decode.map
+            (\v -> ( v, False ))
+            Json.Decode.string
+        ]

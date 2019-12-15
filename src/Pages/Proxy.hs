@@ -1,23 +1,44 @@
 module Pages.Proxy where
 
-import Template
+import Common
+import Chunky
+import Flow
+import Html
+import Html.Attributes (className, id, typ)
+import Protolude
+import Shikensu.Utilities
+
+import qualified Data.Text.Lazy as LazyText
+import qualified Data.Text.Lazy.Encoding as LazyText
 import qualified Components.LoadingScreenScript
 import qualified Data.Aeson as Aeson (encode)
+import qualified Html.Custom as Html
+import qualified Shikensu
 
 
-template :: Template
+-- 🍯
+
+
+template :: Shikensu.Metadata -> Html -> Html
 template obj _ = mconcat
-    [ container_
-        [ class_ "elm-container" ] ↩
-        []
+    [ container
+        [ chunk
+          [ "elm-container" ]
+          []
+        ]
 
     , Components.LoadingScreenScript.template ".elm-container" obj
 
-    , script_
-        [ class_ "config", type_ "application/json" ]
-        ( Aeson.encode obj )
+    , script
+        [ id "config", typ "application/json" ]
+        [ obj
+            |> Aeson.encode
+            |> LazyText.decodeUtf8
+            |> LazyText.toStrict
+            |> Html.unencoded
+        ]
 
-    , relativeScript_ (obj ⚡⚡ "pathToRoot") ("vendor/pako.min.js")
-    , relativeScript_ (obj ⚡⚡ "pathToRoot") ("application.js")
-    , relativeScript_ (obj ⚡⚡ "pathToRoot") ("elm-loader.js")
+    , Html.relativeScript (obj !~> "pathToRoot") ("vendor/pako.min.js")
+    , Html.relativeScript (obj !~> "pathToRoot") ("application.js")
+    , Html.relativeScript (obj !~> "pathToRoot") ("index.js")
     ]

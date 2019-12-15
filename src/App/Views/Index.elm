@@ -1,6 +1,7 @@
 module Views.Index exposing (view)
 
 import Checklist exposing (Checklist)
+import Chunky exposing (..)
 import Constants
 import Form exposing (Form)
 import Form.Input as Input
@@ -9,34 +10,42 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onSubmit)
 import Html.Events.Extra exposing (onClickPreventDefault)
 import Model.Types exposing (Model, Msg(..))
-import Views.Icon
+import Views.Block as Block
+import Views.Icon as Icon
 import Views.Utils
 
 
 view : Model -> Html Msg
 view model =
-    div
-        [ class "blocks" ]
-        [ div
-            [ class "blocks__row" ]
-            [ div
-                [ class "block" ]
+    raw
+        [ Block.row
+            []
+            [ Block.node
+                [ "italic" ]
                 [ theIntro model ]
             ]
-        , div
-            [ class "blocks__row" ]
-            [ div
-                [ class "block" ]
-                [ div
-                    [ class "block__text" ]
-                    [ Html.map HandleCreateForm (theForm model) ]
+        , Block.row
+            []
+            [ Block.node
+                []
+                [ Html.map HandleCreateForm (theForm model)
                 ]
-            , div
-                [ class "block block--filler", attribute "hide-lt" "small" ]
-                [ div
-                    [ class "block--filler__inner" ]
-                    [ Views.Icon.view model "i-check" ]
+            , Block.node
+                [ "bg-gray-100"
+                , "hidden"
+                , "items-center"
+                , "justify-center"
+                , "text-gray-300"
+                , "text-4xl"
+
+                --
+                , "md:flex"
+
+                --
+                , "dark:bg-gray-800"
+                , "dark:text-gray-600"
                 ]
+                [ Icon.view "i-check" model.pathToRoot ]
             ]
         ]
 
@@ -47,9 +56,7 @@ view model =
 
 theIntro : Model -> Html Msg
 theIntro _ =
-    em
-        []
-        [ text "Build a checklist." ]
+    text "Make a checklist."
 
 
 
@@ -67,95 +74,113 @@ theForm model =
                 model.deflationResult
                     |> Maybe.withDefault ""
                     |> String.length
+
             else
                 0
     in
-        Html.form
-            [ onSubmit Form.Submit ]
-            [ p
-                []
-                [ label
-                    [ for "name" ]
-                    [ text "Checklist name" ]
-                , Input.textInput
-                    (Form.getFieldAsString "name" model.createForm)
-                    [ placeholder "My checklist" ]
-                ]
-            , p
-                []
-                [ label
-                    []
-                    [ text "Items" ]
-                , span
-                    [ style [ ( "display", "block" ) ] ]
-                    (List.map
-                        (itemView model.createForm)
-                        (Form.getListIndexes "items" model.createForm)
-                    )
-                ]
-            , p
-                []
-                [ a
-                    [ onClickPreventDefault (Form.Append "items") ]
-                    [ text "+ Add item" ]
-                ]
-            , p
-                []
-                [ button
-                    [ type_ "submit" ]
-                    [ text "Create checklist" ]
-                ]
-            , Views.Utils.formErrors model.createForm False
-            , if deflationLength > Constants.maxDeflationHashLength then
-                p
-                    [ class "form__error" ]
-                    [ text "You have too much text, see counter below." ]
-              else
-                text ""
-            , p
-                []
-                [ small
-                    []
-                    [ em
-                        []
-                        [ text "Unique ID length, "
-                        , strong
-                            []
-                            [ deflationLength
-                                |> toString
-                                |> text
-                            ]
-                        , text (" / " ++ toString Constants.maxDeflationHashLength ++ ".")
-                        ]
-                    ]
-                ]
+    Html.form
+        [ onSubmit Form.Submit ]
+        [ chunk
+            []
+            [ label
+                [ for "name" ]
+                [ text "Checklist name" ]
+            , Input.textInput
+                (Form.getFieldAsString "name" model.createForm)
+                [ placeholder "My checklist" ]
             ]
 
+        --
+        , chunk
+            [ "mt-6" ]
+            [ label
+                []
+                [ text "Items" ]
+            , raw
+                (List.map
+                    (itemView model.pathToRoot model.createForm)
+                    (Form.getListIndexes "items" model.createForm)
+                )
+            ]
 
-itemView : Form String Checklist -> Int -> Html Form.Msg
-itemView leForm idx =
+        --
+        , p
+            []
+            [ slab
+                a
+                [ onClickPreventDefault (Form.Append "items") ]
+                [ "cursor-pointer" ]
+                [ text "+ Add item" ]
+            ]
+        , p
+            []
+            [ button
+                [ type_ "submit" ]
+                [ text "Create checklist" ]
+            ]
+        , Views.Utils.formErrors model.createForm False
+        , if deflationLength > Constants.maxDeflationHashLength then
+            p
+                [ class "form__error" ]
+                [ text "Your items are too long, see counter below." ]
+
+          else
+            text ""
+        , p
+            []
+            [ slab
+                small
+                []
+                [ "italic" ]
+                [ text "Unique ID length, "
+                , strong
+                    []
+                    [ deflationLength
+                        |> toString
+                        |> text
+                    ]
+                , text (" / " ++ toString Constants.maxDeflationHashLength ++ ".")
+                ]
+            ]
+        ]
+
+
+itemView : String -> Form String Checklist -> Int -> Html Form.Msg
+itemView pathToRoot leForm idx =
     let
-        i =
-            toString (idx)
-
-        n =
-            toString (idx + 1)
+        ( i, n ) =
+            ( toString idx
+            , toString (idx + 1)
+            )
 
         field =
             Form.getFieldAsString ("items." ++ i) leForm
     in
-        span
-            []
-            [ span
-                [ class "form-item" ]
-                [ Input.textInput
-                    field
-                    [ placeholder ("Item " ++ n), value (Maybe.withDefault "" field.value) ]
-                , a
-                    [ class "form-item__remove"
-                    , onClickPreventDefault (Form.RemoveItem "items" idx)
-                    , title "Remove item"
-                    ]
-                    [ text "✘" ]
-                ]
+    chunk
+        [ "mt-px"
+        , "relative"
+        ]
+        [ Input.textInput
+            field
+            [ placeholder ("Item " ++ n)
+            , value (Maybe.withDefault "" field.value)
             ]
+        , slab
+            a
+            [ onClickPreventDefault (Form.RemoveItem "items" idx)
+            , title "Remove item"
+            ]
+            [ "absolute"
+            , "cursor-pointer"
+            , "right-0"
+            , "text-gray-500"
+            , "text-lg"
+            , "top-1/2"
+            , "-translate-y-1/2"
+
+            --
+            , "dark:text-gray-900"
+            ]
+            [ Icon.view "i-circle-with-cross" pathToRoot
+            ]
+        ]

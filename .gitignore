@@ -1,5 +1,5 @@
-.stack-work
-build
-deploy.sh
-elm-stuff
-node_modules
+/.stack-work
+/build
+/elm-stuff
+/node_modules
+icidasset.cabal

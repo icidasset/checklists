@@ -1,70 +1,95 @@
 .PHONY: build system
 
 
-# variables
+# Variables
+# ---------
+
 BIN=./node_modules/.bin
-BUILD_DIR=./build
+BUILD_DIR=build
+SRC_DIR=src
+TEMPLATE_DIR=icidasset-template
 
 
-# tasks
+
+# Default task
+# ------------
+
 all: build
+	@make -j watch server
 
+
+
+# Tasks
+# -----
 
 build: clean system elm css
+	@echo "> Build completed ⚡"
 
 
-build-production: build
-	# TODO: Minify, etc.
+build-production: clean system elm-prod css-prod
 
 
 clean:
-	@echo "> Cleaning Build Directory"
+	@echo "> Cleaning build directory"
 	@rm -rf $(BUILD_DIR)
 
 
 css:
-	@echo "> Compiling CSS"
+	@echo "> Compiling Css"
 	@$(BIN)/postcss \
-		-u postcss-import \
-		-u postcss-mixins \
-		-u postcss-custom-units \
-		-u postcss-remify --postcss-remify.base=16 \
-		-u postcss-simple-vars \
-		-u postcss-cssnext --no-postcss-cssnext.features.rem \
-		-o $(BUILD_DIR)/application.css \
-		./src/Css/index.css
+		"${SRC_DIR}/Css/Main.css" \
+		--output "${BUILD_DIR}/stylesheet.css" \
+		--config "${TEMPLATE_DIR}/Css/"
+
+
+css-prod:
+	@echo "> Compiling Css (optimized)"
+	@$(BIN)/postcss \
+		"${SRC_DIR}/Css/Main.css" \
+		--output "${BUILD_DIR}/stylesheet.css" \
+		--config "${TEMPLATE_DIR}/Css/"
+		--env production
 
 
 elm:
-	@echo "> Compiling Elm code"
+	@echo "> Compiling Elm application"
+	@elm make src/App/Main.elm --output $(BUILD_DIR)/application.js
 
-	$(eval ELM_MAKE_ARGS = src/App/Main.elm --output $(BUILD_DIR)/application.js --yes)
 
-	@if [ -d ./libsysconfcpus/bin ]; then \
-		./libsysconfcpus/bin/sysconfcpus -n 1 elm-make $(ELM_MAKE_ARGS); \
-	else \
-		elm-make $(ELM_MAKE_ARGS); \
-	fi
+elm-prod:
+	@echo "> Compiling Elm application (optimized)"
+	@elm make src/App/Main.elm --output $(BUILD_DIR)/application.js --optimize
+
+	@$(BIN)/terser $(BUILD_DIR)/application.js \
+		--output $(BUILD_DIR)/application.tmp.js \
+		--compress --mangle
+
+	@rm $(BUILD_DIR)/application.js
+	@mv $(BUILD_DIR)/application.tmp.js $(BUILD_DIR)/application.js
 
 
 server:
-	@echo "> Booting up web server"
-	@stack build && stack exec server
+	@echo "> Booting up web server on port 8000"
+	@devd --port 8000 --all --crossdomain --quiet --notfound=200.html $(BUILD_DIR)
 
 
 system:
 	@echo "> Compiling System"
-	@stack build && stack exec build
+	@stack build --fast && stack exec build
 
 
-systemWithProfiles:
-	@echo "> Compiling System (with stack-traces / profiles)"
-	@stack build --force-dirty --executable-profiling --library-profiling && stack exec build
+watch:
+	@echo "> Watching"
+	@make -j watch-css watch-elm watch-system
 
 
-watch: build
-	@stack exec fswatcher -- \
-		--path ./ \
-		--include "icidasset-template|src|system" \
-		--exclude "build|node_modules|.DS_Store|.stack-work" \
-		make
+watch-css:
+	@watchexec -p -i "${BUILD_DIR}/*" --exts "css" -- make css
+
+
+watch-elm:
+	@watchexec -p -i "${BUILD_DIR}/*" --exts "elm" -- make elm
+
+
+watch-system:
+	@watchexec -p -i "${BUILD_DIR}/*" --exts "md,hs,yaml" -- make system

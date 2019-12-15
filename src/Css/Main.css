@@ -1,0 +1,25 @@
+@import "../../icidasset-template/Css/Core";
+
+
+input[type="checkbox"] + label > div:first-child {
+  @apply bg-gray-300;
+  height: 1.15em;
+  width: 1.15em;
+}
+
+
+input[type="checkbox"]:not(:checked) + label > div:first-child > * {
+  display: none;
+}
+
+
+input[type="checkbox"]:checked + label > div:first-child {
+  @apply bg-indigo-400;
+}
+
+
+@screen dark {
+  input[type="checkbox"] + label > div:first-child {
+    @apply bg-gray-700;
+  }
+}
