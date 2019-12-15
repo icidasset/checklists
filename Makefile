@@ -75,6 +75,7 @@ server:
 system:
 	@echo "> Compiling System"
 	@stack build --fast && stack exec build
+	@cp $(SRC_DIR)/_redirects $(BUILD_DIR)/_redirects
 
 
 watch:
