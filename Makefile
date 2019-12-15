@@ -44,21 +44,20 @@ css:
 
 css-prod:
 	@echo "> Compiling Css (optimized)"
-	@$(BIN)/postcss \
+	@NODE_ENV=production $(BIN)/postcss \
 		"${SRC_DIR}/Css/Main.css" \
 		--output "${BUILD_DIR}/stylesheet.css" \
 		--config "${TEMPLATE_DIR}/Css/"
-		--env production
 
 
 elm:
 	@echo "> Compiling Elm application"
-	@elm make src/App/Main.elm --output $(BUILD_DIR)/application.js
+	@elm-make src/App/Main.elm --output $(BUILD_DIR)/application.js
 
 
 elm-prod:
 	@echo "> Compiling Elm application (optimized)"
-	@elm make src/App/Main.elm --output $(BUILD_DIR)/application.js --optimize
+	@elm-make src/App/Main.elm --output $(BUILD_DIR)/application.js
 
 	@$(BIN)/terser $(BUILD_DIR)/application.js \
 		--output $(BUILD_DIR)/application.tmp.js \
