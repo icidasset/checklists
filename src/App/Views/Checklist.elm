@@ -106,11 +106,15 @@ theChecklist model checklist =
         , Block.row
             []
             [ menu
-                [ a
+                [ slab
+                    Html.a
                     [ onClickPreventDefault ForkCurrent ]
+                    [ "cursor-pointer" ]
                     [ text "Fork checklist" ]
-                , a
+                , slab
+                    Html.a
                     [ href "../", onClickPreventDefault NewChecklist ]
+                    [ "cursor-pointer" ]
                     [ text "Create new checklist" ]
                 ]
             ]
