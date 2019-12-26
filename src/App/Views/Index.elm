@@ -179,7 +179,7 @@ itemView pathToRoot leForm idx =
             , "-translate-y-1/2"
 
             --
-            , "dark:text-gray-900"
+            , "dark:text-gray-600"
             ]
             [ Icon.view "i-circle-with-cross" pathToRoot
             ]
